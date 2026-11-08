@@ -11,12 +11,11 @@ class Module extends Model
     protected $fillable = [
     'codigo',
     'nombre',
-    'teacher_id',
     ];
     public function students(){
         return $this->hasMany('App\Models\Student');
     }
     public function teachers(){
-        return $this->belongsToMany('App\Models\Teacher');
+        return $this->belongsToMany('App\Models\Teacher', 'module_teachers');
     }
 }

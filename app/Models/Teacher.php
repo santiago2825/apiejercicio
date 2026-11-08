@@ -13,9 +13,8 @@ class Teacher extends Model
         'apellido',
         'telefono',
         'cedula',
-        'module_id'
     ];
     public function modules(){
-        return $this->belongsToMany('App\Models\Module');
+        return $this->belongsToMany('App\Models\Module', 'module_teachers');
     }
 }
