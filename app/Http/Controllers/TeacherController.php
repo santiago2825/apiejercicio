@@ -13,10 +13,10 @@ class TeacherController extends Controller
     }
     public function store(Request $request){
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'telefono' => 'required|string|max:255',
-            'cedula' => 'required|string|max:255',
+            'cedula' => 'required|string|max:255|unique:teachers,cedula',
             'module_id' => 'required|integer|exists:modules,id'
         ]);
         $teacher = Teacher::create($request->all());
@@ -30,10 +30,10 @@ class TeacherController extends Controller
     }
     public function update(Request $request, Teacher $teacher){
         $request->validate([
-            'name' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255',
             'apellido' => 'required|string|max:255',
             'telefono' => 'required|string|max:255',
-            'cedula' => 'required|string|max:255',
+            'cedula' => 'required|string|max:255|unique:teachers,cedula,' . $teacher->id,
             'module_id' => 'required|integer|exists:modules,id'
         ]);
         $teacher->update($request->all());
