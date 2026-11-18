@@ -87,11 +87,11 @@ class StudentController extends Controller
         $student = Student::with('module')->find($id);
         return response()->json($student);
     }
-    public function destroy(Student $students){
-        $students->delete();
+    public function destroy(Student $student){
+        $student->delete();
         return response()->json([
             'message'=>'elimado correctamente',
-            'data'=>$students
+            'data' => $student
         ]);
     }
 }
