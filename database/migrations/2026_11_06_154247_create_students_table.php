@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string("nombre");
             $table->string("apellido");
-            $table->date("fecha nacimiento");
+            $table->date("fecha_nacimiento");
             $table->string("expediente")->unique();
             $table->string('imagen_url');
             $table->string('imagen_public_id');
 
             //llave foranea de modulo
-            
+
             $table->unsignedBigInteger('module_id');
             $table->foreign('module_id')
             ->references('id')

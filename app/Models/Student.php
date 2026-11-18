@@ -11,7 +11,7 @@ class Student extends Model
     protected $fillable = [
         'nombre',
         'apellido',
-        'fecha nacimiento',
+        'fecha_nacimiento',
         'expediente',
         'imagen_url',
         'imagen_public_id',
