@@ -48,16 +48,16 @@ class StudentController extends Controller
         ]);
         return response()->json($students);
     }
-    public function update(Request $request, Student $students){
+    public function update(Request $request, Student $student){
         $request->validate([
             'nombre'=>'required|string|max:255',
             'apellido'=>'required|string|max:255',
             'fecha_nacimiento'=>'required|date',
-            'expediente'=>'required|string|max:255|unique:students,expediente,' . $students->id,
-            'imagen'=>'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'expediente'=>'required|string|max:255|unique:students,expediente,' . $student->id,
+            'imagen'=>'sometimes|required|image|mimes:jpg,jpeg,png,webp|max:5120',
             'module_id'=>'required|integer|exists:modules,id'
         ]);
-            $students->fill($request->only([
+    $student->fill($request->only([
             'nombre',
             'apellido',
             'fecha_nacimiento',
@@ -65,22 +65,42 @@ class StudentController extends Controller
             'module_id',
         ]));
 
+    $oldImagePublicId = null;
+
     if ($request->hasFile('imagen')) {
-        // Eliminar anterior si existe
-        if ($students->imagen_public_id) {
-            cloudinary()->destroy($students->imagen_public_id);
-        }
-        // Subir nueva con el helper de Laravel
-        $uploaded = $request->file('imagen')->storeOnCloudinary('students');
-        $students->fill([
-            'imagen_url' => $uploaded->getSecureUrl(),
-            'imagen_public_id' => $uploaded->getPublicId(),
+        $cloudinary = new Cloudinary([
+            'cloud' => [
+                'cloud_name' => config('services.cloudinary.cloud_name'),
+                'api_key' => config('services.cloudinary.api_key'),
+                'api_secret' => config('services.cloudinary.api_secret'),
+            ],
+            'url' => ['secure' => true],
+        ]);
+
+        $uploaded = $cloudinary->uploadApi()->upload(
+            $request->file('imagen')->getRealPath(),
+            [
+                'folder' => 'students',
+                'resource_type' => 'image',
+            ]
+        );
+
+        $oldImagePublicId = $student->imagen_public_id;
+        $student->fill([
+            'imagen_url' => $uploaded['secure_url'],
+            'imagen_public_id' => $uploaded['public_id'],
         ]);
     }
-    $students->save();
+
+    $student->save();
+
+    if ($oldImagePublicId) {
+        $cloudinary->uploadApi()->destroy($oldImagePublicId);
+    }
+
     return response()->json([
         'message' => 'Elemento actualizado correctamente',
-        'data' => $students
+        'data' => $student
     ]);
     }
     public function show($id){
